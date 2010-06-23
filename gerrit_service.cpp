@@ -311,9 +311,10 @@ run_gerrit()
     cmdline.append(g_gerrit_site);
     cmdline.append(L"\"");
 
-    wcmdline = new wchar_t[cmdline.size()];
+    wcmdline = new wchar_t[cmdline.size()+1];
 
     cmdline.copy(wcmdline, cmdline.size());
+    wcmdline[cmdline.size()] = L'\0';
 
     ZeroMemory(&si, sizeof(si));
     si.cb = sizeof(si);

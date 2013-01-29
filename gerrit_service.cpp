@@ -22,16 +22,20 @@
  * SOFTWARE.
  */
 
+#ifndef UNICODE
 #define UNICODE
+#endif
+#ifndef _UNICODE
 #define _UNICODE
+#endif
 
-#include<windows.h>
-#include<psapi.h>
-#include<iostream>
-#include<fstream>
-#include<string>
-#include<time.h>
-#include<wchar.h>
+#include <windows.h>
+#include <psapi.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <time.h>
+#include <wchar.h>
 
 #pragma comment(lib, "advapi32")
 #pragma comment(lib, "psapi")
@@ -178,8 +182,8 @@ stop_svc()
 }
 
 DWORD WINAPI
-svc_ctrl_handler(__in  DWORD dwControl, __in  DWORD dwEventType,
-                 __in  LPVOID lpEventData, __in  LPVOID lpContext)
+svc_ctrl_handler(__in  DWORD dwControl, __in  DWORD,
+                 __in  LPVOID, __in  LPVOID)
 {
     switch (dwControl) {
     case SERVICE_CONTROL_CONTINUE:
@@ -202,7 +206,7 @@ svc_ctrl_handler(__in  DWORD dwControl, __in  DWORD dwEventType,
 
 // Gets called when the g_shutdown_event is set
 VOID CALLBACK
-svc_termination_handler(__in  PVOID lpParameter, __in  BOOLEAN TimerOrWaitFired)
+svc_termination_handler(__in  PVOID, __in  BOOLEAN)
 {
     stop_svc();
 }
@@ -387,7 +391,7 @@ run_gerrit()
 }
 
 VOID WINAPI
-gerrit_svc_main(__in  DWORD dwArgc, __in  LPTSTR* lpszArgv)
+gerrit_svc_main(__in  DWORD, __in  LPTSTR*)
 {
     open_logfile();
 

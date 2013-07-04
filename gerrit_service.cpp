@@ -74,14 +74,15 @@ timestamp()
 }
 
 void
-open_logfile()
+open_logfile(bool log_started)
 {
     std::wstring lpath = g_gerrit_site;
     lpath += L"\\logs\\gerrit_service_log";
 
     logfile.open(lpath.c_str(), std::ios_base::app);
 
-    logfile << timestamp() << L" Logging started" << std::endl;
+    if (log_started)
+        logfile << timestamp() << L" Logging started" << std::endl;
 }
 
 void
@@ -357,11 +358,14 @@ run_gerrit()
         ULONG_PTR key = 0;
         LPOVERLAPPED po = NULL;
 
+        logfile.close();
         if (!GetQueuedCompletionStatus(g_completion_port, &n, &key, &po, INFINITE) &&
             po == NULL) {
             process_running = false;
+            open_logfile(false);
             break;
         }
+        open_logfile(false);
 
         if (n == JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO) {
             logfile << timestamp()
@@ -389,7 +393,7 @@ run_gerrit()
 VOID WINAPI
 gerrit_svc_main(__in  DWORD dwArgc, __in  LPTSTR* lpszArgv)
 {
-    open_logfile();
+    open_logfile(true);
 
     logfile << timestamp() << " Starting service" << std::endl;
 

@@ -383,12 +383,6 @@ run_gerrit()
             }
             break;
         }
-
-        logfile << timestamp()
-                << " Continuing after GetQueuedCompletionStatus() "
-                << ";n = " << n
-                << ";key = " << key
-                << ";po = " << po << std::endl;
     }
 
     return;

@@ -736,8 +736,9 @@ process_arguments(int argc, wchar_t ** argv)
 int
 run_service(void)
 {
+    wchar_t name[] = L"Gerrit";
     SERVICE_TABLE_ENTRY svc[] = {
-        { L"Gerrit", gerrit_svc_main },
+        { name, gerrit_svc_main },
         { NULL, NULL }
     };
 

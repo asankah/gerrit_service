@@ -47,6 +47,7 @@ static std::wstring g_service_name;
 static std::wstring g_display_name;
 static std::wstring g_account_name;
 static std::wstring g_password;
+static std::wstring g_options;
 static DWORD        g_start_type = SERVICE_AUTO_START;
 
 static SERVICE_STATUS_HANDLE g_status = NULL;
@@ -310,8 +311,10 @@ run_gerrit()
         cmdline.append(g_java_home);
         cmdline.append(L"\\bin\\");
     }
-    cmdline.append(L"java.exe\" -jar \"");
-    cmdline.append(g_gerrit_war);
+    cmdline.append(L"java.exe\" ");
+    if (!g_options.empty())
+        cmdline.append(g_options + L" ");
+    cmdline.append(L"-jar \"" + g_gerrit_war);
     cmdline.append(L"\" daemon -d \"");
     cmdline.append(g_gerrit_site);
     cmdline.append(L"\"");
@@ -433,6 +436,7 @@ show_usage(const wchar_t * pname)
         << L"   -j <JAVA_HOME>   : Set JAVA_HOME" << std::endl
         << L"   -d <GERRIT_SITE> : Set GERRIT_SITE" << std::endl
         << L"   -g <path>        : Set the path to gerrit.war.  Defaults to $GERRIT_SITE\\bin\\gerrit.war" << std::endl
+        << L"   -o <options>     : Set extra options passed to java" << std::endl
         << L"   -i               : Installs the service.  Cannot be used with -u." << std::endl
         << L"   -u               : Uninstall the service.  Cannot be used with -i." << std::endl
         // << std::endl
@@ -541,6 +545,9 @@ install_service()
     cmdline.append(L" -d \"" + g_gerrit_site + L"\"");
     if (g_gerrit_war.size() != 0)
         cmdline.append(L" -g \"" + g_gerrit_war + L"\"");
+    if (!g_options.empty()) {
+        cmdline.append(L" -o \"" + g_options + L"\"");
+    }
 
     std::wcout << "Attempting to install Gerrit service: " << std::endl
                << "  Service name: " << g_service_name << std::endl
@@ -549,6 +556,7 @@ install_service()
                << "  Gerrit site : " << g_gerrit_site << std::endl
                << "  gerrit.war  : " << g_gerrit_war << std::endl
                << "  Java path   : " << g_java_home << std::endl
+               << "  Options     : " << g_options << std::endl
                << "  Command line: " << cmdline << std::endl;
 
     SC_HANDLE scm = NULL;
@@ -700,6 +708,10 @@ process_arguments(int argc, wchar_t ** argv)
                 show_usage(argv[0]);
                 return 0;
             }
+
+        } else if (!wcscmp(argv[i], L"-o") && i + 1 < argc) {
+
+            g_options = argv[++i];
 
         } else {
 
